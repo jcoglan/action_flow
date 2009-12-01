@@ -29,7 +29,7 @@ of requests:
 When the user hits UsersController#new, we know they're in the "signup" flow.
 The user remains in that flow until they complete it, or until they make a
 request that does not continue the current sequence AND begins another sequence.
-(This allows for intervenening requests such as Ajax calls not to kick the
+(This allows for intervening requests such as Ajax calls not to kick the
 user out of their current flow.)
 
 In your controller, you can use next_in_flow to redirect to another action
