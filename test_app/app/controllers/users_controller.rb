@@ -5,5 +5,8 @@ class UsersController < ApplicationController
   def create
     return next_in_flow if request.post?
   end
+  
+  def settings
+  end
 end
 

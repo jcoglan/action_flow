@@ -16,7 +16,12 @@ module ActionFlow
     end
     
     def action_at(index)
-      @expressions[index].to_h
+      expr = @expressions[index]
+      expr && expr.to_h
+    end
+    
+    def to_a
+      @expressions
     end
     
     class Watcher

@@ -9,7 +9,17 @@ class ApplicationController < ActionController::Base
   # filter_parameter_logging :password
   
   ActionFlow.configure do
-    flow :signup, users.new, post(users.create), application.dashboard
+    flow :signup,         users.new,
+                          post(users.create),
+                          application.dashboard
+    
+    flow :contact_import, imports.new,
+                          imports.show,
+                          post(imports.create)
+    
+    flow :settings,       users.settings,
+                          :contact_import,
+                          application.dashboard
   end
   
   def dashboard
