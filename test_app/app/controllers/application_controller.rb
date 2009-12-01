@@ -8,6 +8,8 @@ class ApplicationController < ActionController::Base
   # Scrub sensitive parameters from your log
   # filter_parameter_logging :password
   
+  include ActionFlow::Filters
+  
   ActionFlow.configure do
     flow :signup,         users.new,
                           post(users.create),
