@@ -24,10 +24,6 @@ module ActionFlow
       @flows[name.to_sym] = Flow.new(expressions)
     end
     
-    def find(symbol)
-      Variable.new(symbol)
-    end
-    
   end
 end
 

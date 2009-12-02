@@ -115,6 +115,10 @@ module ActionFlow
           end
         EOS
       end
+      
+      def find(symbol)
+        Variable.new(symbol)
+      end
     end
     
   end
