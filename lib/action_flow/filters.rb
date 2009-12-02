@@ -7,21 +7,25 @@ module ActionFlow
     
   private
     
+    def flow_controller
+      @flow_controller ||= Flow::Controller.new(self)
+    end
+    
     def in_flow?(name)
-      Flow::Controller.new(self).in_flow?(flow_name)
+      flow_controller.in_flow?(flow_name)
     end
     
     def next_in_flow
-      return nil unless action = Flow::Controller.new(self).pick_next_action
+      return nil unless action = flow_controller.pick_next_action
       redirect_to action
     end
     
     def flow
-      Flow::Controller.new(self).current_flow.variables
+      flow_controller.current_flow.variables
     end
     
     def update_flow_status
-      Flow::Controller.new(self).update_session!
+      flow_controller.update_session!
     end
     
   end

@@ -44,7 +44,7 @@ module ActionFlow
       end
       
       def current_flow
-        status.values.find { |state| state.current_matches?(self) }
+        @current_flow ||= status.values.find { |state| state.current_matches?(self) }
       end
       
       def update_session!
