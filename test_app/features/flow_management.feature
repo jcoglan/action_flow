@@ -39,4 +39,11 @@ Feature: Manage flow transitions
     And I follow "Next"
     And I follow "Skip"
     Then I should be at "/settings/outro"
+  
+  Scenario: Pass through variables to flow expressions
+    When I visit "/settings/intro/Hello"
+    And I follow "Next"
+    And I follow "Skip"
+    Then I should be at "/settings/outro/Hello"
+    Then I should see "Hello"
 

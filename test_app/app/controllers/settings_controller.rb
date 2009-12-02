@@ -1,6 +1,7 @@
 class SettingsController < ApplicationController
   
   def intro
+    flow[:text] = params[:id]
   end
   
   def outro

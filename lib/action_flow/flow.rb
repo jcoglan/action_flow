@@ -25,10 +25,10 @@ module ActionFlow
       @expressions.any? { |expr| expr === context }
     end
     
-    def action_at(index)
+    def action_at(index, env)
       return nil unless expression = @expressions[index]
-      return ActionFlow.flows[expression].action_at(0) if Symbol === expression
-      expression.to_h
+      return ActionFlow.flows[expression].action_at(0, env) if Symbol === expression
+      expression.to_h(env)
     end
     
     class Controller
@@ -41,6 +41,10 @@ module ActionFlow
       
       def in_flow?(name)
         status.has_key?(name)
+      end
+      
+      def current_flow
+        status.values.find { |state| state.current_matches?(self) }
       end
       
       def update_session!
@@ -69,17 +73,16 @@ module ActionFlow
         return nil unless flows = ActionFlow.flows
         flows.keys.find { |name| flows[name].begins_with?(self) }
       end
-      
-      def current_flow
-        status.values.find { |state| state.current_matches?(self) }
-      end
     end
     
     class State
+      attr_reader :variables
+      
       def initialize(flow_name)
-        @name  = flow_name
-        @flow  = ActionFlow.flows[flow_name]
-        @index = 0
+        @name      = flow_name
+        @flow      = ActionFlow.flows[flow_name]
+        @index     = 0
+        @variables = {}
       end
       
       def current_matches?(context)
@@ -99,7 +102,7 @@ module ActionFlow
       end
       
       def next_action
-        @flow.action_at(@index + 1)
+        @flow.action_at(@index + 1, variables)
       end
     end
     

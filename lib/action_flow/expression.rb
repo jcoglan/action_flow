@@ -53,6 +53,7 @@ module ActionFlow
                       (@format and @format != p[:format].to_s)
       
       return false unless @params.all? do |key, value|
+        Variable === value ||
         (value == p[key]) || (value == p[key].to_s) ||
         (value === p[key]) || (value === p[key].to_i)
       end
@@ -60,11 +61,16 @@ module ActionFlow
       @matcher ? context.instance_eval(@matcher) : true
     end
     
-    def to_h
-      options = {:controller => @controller}
+    def to_h(env = {})
+      options = {:controller => '/' + @controller}
       options[:action] = @action || :index
       options[:format] = @format if @format
-      options.update(@params)
+      
+      @params.each do |key, value|
+        value = value.lookup(env) if Variable === value
+        options[key] = value
+      end
+      
       options
     end
     

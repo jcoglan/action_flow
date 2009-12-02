@@ -16,6 +16,9 @@ module ActionFlow
       redirect_to action
     end
     
+    def flow
+      Flow::Controller.new(self).current_flow.variables
+    end
     
     def update_flow_status
       Flow::Controller.new(self).update_session!
