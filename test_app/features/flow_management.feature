@@ -46,4 +46,13 @@ Feature: Manage flow transitions
     And I follow "Skip"
     Then I should be at "/settings/outro/Hello"
     Then I should see "Hello"
+  
+  Scenario: Last page of a flow is still part of the flow
+    When I visit "/settings/intro"
+    Then I should see "You're in the :process flow"
+    When I follow "Next"
+    And I follow "Skip"
+    Then I should see "You're in the :process flow"
+    When I visit "/settings/outro"
+    Then I should see "You're in the :process flow"
 

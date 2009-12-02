@@ -9,22 +9,21 @@ module ActionFlow
         @flow      = ActionFlow.flows[flow_name]
         @index     = 0
         @variables = {}
+        @complete  = false
       end
       
       def current_matches?(context)
         @flow.match_at?(@index, context)
       end
       
-      def next_matches?(context)
-        @flow.match_at?(@index + 1, context)
-      end
-      
-      def progress!
-        @index += 1
+      def progress!(context)
+        @index += 1 if @flow.match_at?(@index + 1, context)
+        return if current_matches?(context)
+        @complete = true if @index == @flow.length - 1
       end
       
       def complete?
-        @index == @flow.length - 1
+        @complete
       end
       
       def next_action

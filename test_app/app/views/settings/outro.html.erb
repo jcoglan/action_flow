@@ -2,3 +2,7 @@
 
 <p><%= params[:id] %></p>
 
+<% if in_flow?(:process) %>
+<p>You're in the :process flow</p>
+<% end %>
+

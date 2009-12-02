@@ -15,8 +15,10 @@ module ActionFlow
         status.has_key?(name)
       end
       
-      def current_flow
-        @current_flow ||= status.values.find { |state| state.current_matches?(self) }
+      def current_flow(has_next = false)
+        status.values.find do |state|
+          state.current_matches?(self) and (!has_next or state.next_action)
+        end
       end
       
       def update_session!
@@ -25,13 +27,13 @@ module ActionFlow
         end
         
         status.each do |name, state|
-          state.progress! if state.next_matches?(self)
+          state.progress!(self)
           status.delete(name) if state.complete?
         end
       end
       
       def pick_next_action(flow_name = nil)
-        flow = status[flow_name] || current_flow
+        flow = status[flow_name] || current_flow(true)
         flow ? flow.next_action : nil
       end
       
