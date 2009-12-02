@@ -8,6 +8,10 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "pat
 # Commonly used webrat steps
 # http://github.com/brynary/webrat
 
+When /^I visit "([^\"]*)"$/ do |path|
+  visit path
+end
+
 Given /^I am on (.+)$/ do |page_name|
   visit path_to(page_name)
 end
@@ -182,6 +186,10 @@ end
 
 Then /^I should be on (.+)$/ do |page_name|
   URI.parse(current_url).path.should == path_to(page_name)
+end
+
+Then /^I should be at "([^\"]*)"$/ do |path|
+  URI.parse(current_url).path.should == path
 end
 
 Then /^show me the page$/ do

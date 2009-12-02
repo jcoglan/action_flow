@@ -1,13 +1,12 @@
 module ActionFlow
   module Helpers
     
-    def next_in_flow
-      Flow::Watcher.new(self).pick_next_action
+    def next_in_flow(name = nil)
+      Flow::Controller.new(self).pick_next_action(name)
     end
     
     def in_flow?(flow_name)
-      status = session[:flow_status]
-      status && status[0] == flow_name
+      Flow::Controller.new(self).in_flow?(flow_name)
     end
     
   end

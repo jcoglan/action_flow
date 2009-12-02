@@ -7,58 +7,99 @@ module ActionFlow
       @expressions = expressions
     end
     
-    def begins_with?(context)
-      match?(0, context)
+    def length
+      @expressions.length
     end
     
-    def match?(index, context)
-      @expressions[index] === context
+    def begins_with?(context)
+      @expressions.first === context
+    end
+    
+    def match_at?(index, context)
+      return false unless expression = @expressions[index]
+      return ActionFlow.flows[expression] === context if Symbol === expression
+      expression === context
+    end
+    
+    def ===(context)
+      @expressions.any? { |expr| expr === context }
     end
     
     def action_at(index)
-      expr = @expressions[index]
-      expr && expr.to_h
+      return nil unless expression = @expressions[index]
+      return ActionFlow.flows[expression].action_at(0) if Symbol === expression
+      expression.to_h
     end
     
-    def to_a
-      @expressions
-    end
-    
-    class Watcher
+    class Controller
       extend Forwardable
-      def_delegators :@context, :params, :request, :session
+      def_delegators :@context, :params, :session, :request
       
       def initialize(context)
         @context = context
       end
       
-      def pick_next_action
-        return nil unless status = session[:flow_status]
-        ActionFlow.flows[status[0]].action_at(status[1] + 1)
+      def in_flow?(name)
+        status.has_key?(name)
       end
       
-      def update_session
-        return unless flows = ActionFlow.flows
-        return pick_new_flow(new_flow_candidate) unless status = session[:flow_status]
+      def update_session!
+        if name = new_flow_candidate
+          status[name] = State.new(name)
+        end
         
-        flow = flows[status[0]]
-        if flow.match?(status[1] + 1, @context)
-          status[1] += 1
-        else
-          if name = new_flow_candidate
-            pick_new_flow(name)
-          end
+        status.each do |name, state|
+          state.progress! if state.next_matches?(self)
+          status.delete(name) if state.complete?
+        end
+        
+        session[:current_flow] = status.values.find do |state|
+          state.current_matches?(self)
         end
       end
       
-      def pick_new_flow(name)
-        session[:flow_status] = name ? [name,0] : nil
+      def pick_next_action(flow_name = nil)
+        flow = status[flow_name] || session[:current_flow]
+        flow ? flow.next_action : nil
+      end
+      
+    private
+      
+      def status
+        session[:flow_status] ||= {}
       end
       
       def new_flow_candidate
-        ActionFlow.flows.keys.find do |flow_name|
-          ActionFlow.flows[flow_name].begins_with?(@context)
-        end
+        return nil unless flows = ActionFlow.flows
+        flows.keys.find { |name| flows[name].begins_with?(self) }
+      end
+    end
+    
+    class State
+      def initialize(flow_name)
+        @name  = flow_name
+        @flow  = ActionFlow.flows[flow_name]
+        @index = 0
+      end
+      
+      def current_matches?(context)
+        @flow.match_at?(@index, context)
+      end
+      
+      def next_matches?(context)
+        @flow.match_at?(@index + 1, context)
+      end
+      
+      def progress!
+        @index += 1
+      end
+      
+      def complete?
+        @index == @flow.length - 1
+      end
+      
+      def next_action
+        @flow.action_at(@index + 1)
       end
     end
     

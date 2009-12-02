@@ -8,17 +8,17 @@ module ActionFlow
   private
     
     def in_flow?(name)
-      # TODO
+      Flow::Controller.new(self).in_flow?(flow_name)
     end
     
     def next_in_flow
-      return nil unless action = Flow::Watcher.new(self).pick_next_action
+      return nil unless action = Flow::Controller.new(self).pick_next_action
       redirect_to action
     end
     
     
     def update_flow_status
-      Flow::Watcher.new(self).update_session
+      Flow::Controller.new(self).update_session!
     end
     
   end

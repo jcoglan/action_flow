@@ -1,0 +1,8 @@
+<% if next_in_flow %>
+  <%= link_to "Next", next_in_flow %>
+<% end %>
+
+<% if in_flow?(:process) %>
+  <%= link_to "Skip", next_in_flow(:process) %>
+<% end %>
+
