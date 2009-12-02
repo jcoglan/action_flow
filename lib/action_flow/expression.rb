@@ -74,6 +74,15 @@ module ActionFlow
       options
     end
     
+    def inspect
+      source = @controller.dup
+      source << ".#{ @action }" if @action
+      source << "(#{ @params.map { |k,v| ":#{k} => #{v.inspect}" } * ', ' })" unless @params.empty?
+      source << "#{ @action ? '.' : '*' }#{ @format }" if @format
+      source = "#{ @verb }(#{ source })" if @verb
+      source
+    end
+    
     class Group
       include Enumerable
       
