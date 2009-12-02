@@ -12,8 +12,8 @@ module ActionFlow
         @complete  = false
       end
       
-      def current_matches?(context)
-        @flow.match_at?(@index, context)
+      def match_distance(context)
+        @flow.match_distance(@index, context)
       end
       
       def progress!(context)
@@ -28,6 +28,12 @@ module ActionFlow
       
       def next_action
         @flow.action_at(@index + 1, variables)
+      end
+      
+    private
+      
+      def current_matches?(context)
+        @flow.match_at?(@index, context)
       end
     end
     

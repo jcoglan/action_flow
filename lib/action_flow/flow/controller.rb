@@ -16,9 +16,9 @@ module ActionFlow
       end
       
       def current_flow(has_next = false)
-        status.values.find do |state|
-          state.current_matches?(self) and (!has_next or state.next_action)
-        end
+        status.values.sort_by { |state| state.match_distance(self) }.
+        find_all { |state| !has_next or state.next_action }.
+        first
       end
       
       def update_session!
