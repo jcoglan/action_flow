@@ -23,6 +23,7 @@ module ActionFlow
       return 1000 unless expression = @expressions[index]
       return 0 if expression === context
       return 1 if Symbol === expression and ActionFlow.flows[expression] === context
+      1000
     end
     
     def begins_with?(context)
