@@ -52,14 +52,10 @@ module ActionFlow
           state.progress! if state.next_matches?(self)
           status.delete(name) if state.complete?
         end
-        
-        session[:current_flow] = status.values.find do |state|
-          state.current_matches?(self)
-        end
       end
       
       def pick_next_action(flow_name = nil)
-        flow = status[flow_name] || session[:current_flow]
+        flow = status[flow_name] || current_flow
         flow ? flow.next_action : nil
       end
       
@@ -72,6 +68,10 @@ module ActionFlow
       def new_flow_candidate
         return nil unless flows = ActionFlow.flows
         flows.keys.find { |name| flows[name].begins_with?(self) }
+      end
+      
+      def current_flow
+        status.values.find { |state| state.current_matches?(self) }
       end
     end
     
