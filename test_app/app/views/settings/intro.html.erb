@@ -2,7 +2,7 @@
 
 <%= link_to "Next", next_in_flow %>
 
-<% if in_flow?(:process) %>
+<% if @in_process %>
 <p>You're in the :process flow</p>
 <% end %>
 

@@ -2,6 +2,7 @@ class SettingsController < ApplicationController
   
   def intro
     flow[:text] = params[:id]
+    @in_process = in_flow?(:process)
   end
   
   def outro
