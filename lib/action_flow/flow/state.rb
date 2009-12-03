@@ -19,6 +19,11 @@ module ActionFlow
       def progress!(context)
         @index += 1 if @flow.match_at?(@index + 1, context)
         return if current_matches?(context)
+        
+        0.upto(@index) do |backtrack|
+          @index = backtrack if @flow.match_at?(backtrack, context)
+        end
+        
         @complete = true if @index == @flow.length - 1
       end
       

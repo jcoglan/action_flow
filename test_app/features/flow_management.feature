@@ -55,4 +55,13 @@ Feature: Manage flow transitions
     Then I should see "You're in the :process flow"
     When I visit "/settings/outro"
     Then I should see "You're in the :process flow"
+  
+  Scenario: Backtracking still picks the right next action
+    When I visit "/settings/one"
+    And I follow "Next"
+    When I follow "Next"
+    Then I should be at "/settings/three"
+    When I visit "/settings/two"
+    When I follow "Next"
+    Then I should be at "/settings/three"
 
