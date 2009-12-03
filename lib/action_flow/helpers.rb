@@ -5,8 +5,8 @@ module ActionFlow
       Flow::Controller.new(self).pick_next_action(name)
     end
     
-    def in_flow?(flow_name)
-      Flow::Controller.new(self).in_flow?(flow_name)
+    def in_flow?(name)
+      Flow::Controller.new(self).in_flow?(name)
     end
     
   end

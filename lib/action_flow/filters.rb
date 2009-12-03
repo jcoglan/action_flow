@@ -12,7 +12,7 @@ module ActionFlow
     end
     
     def in_flow?(name)
-      flow_controller.in_flow?(flow_name)
+      flow_controller.in_flow?(name)
     end
     
     def next_in_flow
