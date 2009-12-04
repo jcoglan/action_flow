@@ -45,3 +45,9 @@ Webrat.configure do |config|
   config.open_error_files = false # Set to true if you want error pages to pop up in the browser
 end
 
+# Monkey patches can break DSLs, we need to guard against it
+module Kernel
+  def settings
+    :gotcha
+  end
+end
