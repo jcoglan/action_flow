@@ -10,7 +10,8 @@ class SettingsController < ApplicationController
   
   %w[one two three four five six seven eight].each do |number|
     define_method number do
-      render :partial => 'step'
+      skip = next_in_flow(:process) if in_flow?(:process) and params[:skip]
+      skip or render(:partial => 'step')
     end
   end
   

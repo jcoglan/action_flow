@@ -19,6 +19,13 @@ Feature: Manage flow transitions
     When I follow "Next"
     Then I should be at "/settings/outro"
   
+  Scenario: Skipping the outer sequence from the controller
+    When I visit "/settings/intro"
+    And I follow "Next"
+    Then I should be at "/settings/one"
+    When I visit "/settings/two?skip=true"
+    Then I should be at "/settings/outro"
+  
   Scenario: Skip a subflow
     When I visit "/settings/intro"
     And I follow "Next"
