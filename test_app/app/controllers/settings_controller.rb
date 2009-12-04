@@ -8,16 +8,10 @@ class SettingsController < ApplicationController
   def outro
   end
   
-  def one
-    render :partial => 'step'
-  end
-  
-  def two
-    render :partial => 'step'
-  end
-  
-  def three
-    render :partial => 'step'
+  %w[one two three four five six seven eight].each do |number|
+    define_method number do
+      render :partial => 'step'
+    end
   end
   
 end

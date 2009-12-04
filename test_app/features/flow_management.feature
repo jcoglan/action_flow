@@ -64,4 +64,18 @@ Feature: Manage flow transitions
     When I visit "/settings/two"
     When I follow "Next"
     Then I should be at "/settings/three"
+  
+  Scenario: Skip back and forth between visited pages
+    When I visit "/settings/four"
+    And I follow "Next"
+    And I follow "Next"
+    And I follow "Next"
+    Then I should be at "/settings/seven"
+    When I visit "/settings/five"
+    And I follow "Next"
+    Then I should be at "/settings/six"
+    When I visit "/settings/five"
+    And I visit "/settings/seven"
+    And I follow "Next"
+    Then I should be at "/settings/eight"
 

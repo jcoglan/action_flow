@@ -8,6 +8,7 @@ module ActionFlow
         @name      = flow_name
         @flow      = ActionFlow.flows[flow_name]
         @index     = 0
+        @max_index = 0
         @variables = {}
         @complete  = false
       end
@@ -18,9 +19,10 @@ module ActionFlow
       
       def progress!(context)
         @index += 1 if @flow.match_at?(@index + 1, context)
+        @max_index = [@max_index, @index].max
         return if current_matches?(context)
         
-        0.upto(@index) do |backtrack|
+        0.upto(@max_index) do |backtrack|
           @index = backtrack if @flow.match_at?(backtrack, context)
         end
         
