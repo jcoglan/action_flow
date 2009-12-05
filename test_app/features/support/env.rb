@@ -3,6 +3,14 @@
 # in the future when you upgrade to a newer version of Cucumber.
 # Consider adding your own code to a new file instead of editing this one.
 
+# Monkey patches can break DSLs, we need to guard against it
+module Kernel
+  private
+    def settings
+      :gotcha
+    end
+end
+
 # Sets up the Rails environment for Cucumber
 ENV["RAILS_ENV"] ||= "cucumber"
 require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
@@ -45,9 +53,3 @@ Webrat.configure do |config|
   config.open_error_files = false # Set to true if you want error pages to pop up in the browser
 end
 
-# Monkey patches can break DSLs, we need to guard against it
-module Kernel
-  def settings
-    :gotcha
-  end
-end
