@@ -32,9 +32,12 @@ module ActionFlow
         end
       end
       
-      def pick_next_action(flow_name = nil)
+      def pick_next_action(*args)
+        flow_name = args.find { |arg| Symbol === arg } || nil
+        params    = args.find { |arg| Hash === arg }   || {}
+        
         flow = status[flow_name] || current_flow(true)
-        flow ? flow.next_action : nil
+        flow ? flow.next_action(params) : nil
       end
       
     private

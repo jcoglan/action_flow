@@ -30,10 +30,10 @@ module ActionFlow
       @expressions.first === context
     end
     
-    def action_at(index, env)
+    def action_at(index, env, params = {})
       return nil unless expression = @expressions[index]
-      return ActionFlow.flows[expression].action_at(0, env) if Symbol === expression
-      expression.to_h(env)
+      return ActionFlow.flows[expression].action_at(0, env, params) if Symbol === expression
+      expression.to_h(env).merge(params)
     end
     
   end

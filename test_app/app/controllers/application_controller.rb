@@ -16,6 +16,9 @@ class ApplicationController < ActionController::Base
     flow :process,  settings.intro + application.other,
                     :steps,
                     settings.outro(:id => find(:text))
+    
+    flow :pass,     settings.passthrough,
+                    settings.intro
   end
   
 end

@@ -15,5 +15,9 @@ class SettingsController < ApplicationController
     end
   end
   
+  def passthrough
+    next_in_flow(:product => params[:id])
+  end
+  
 end
 

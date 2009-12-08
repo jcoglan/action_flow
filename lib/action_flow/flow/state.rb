@@ -33,8 +33,8 @@ module ActionFlow
         @complete
       end
       
-      def next_action
-        @flow.action_at(@index + 1, variables)
+      def next_action(params = {})
+        @flow.action_at(@index + 1, variables, params)
       end
       
     private

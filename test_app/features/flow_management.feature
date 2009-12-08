@@ -85,4 +85,8 @@ Feature: Manage flow transitions
     And I visit "/settings/seven"
     And I follow "Next"
     Then I should be at "/settings/eight"
+  
+  Scenario: Pass params through #next_in_flow
+    When I visit "/settings/passthrough/milk"
+    Then I should see "Received milk"
 

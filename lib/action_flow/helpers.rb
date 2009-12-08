@@ -1,8 +1,8 @@
 module ActionFlow
   module Helpers
     
-    def next_in_flow(name = nil)
-      Flow::Controller.new(self).pick_next_action(name)
+    def next_in_flow(name = nil, params = {})
+      Flow::Controller.new(self).pick_next_action(name, params)
     end
     
     def in_flow?(name)
