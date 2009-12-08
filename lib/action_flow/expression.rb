@@ -106,7 +106,7 @@ module ActionFlow
       end
       
       def ===(context)
-        all? { |exp| exp === context }
+        any? { |exp| exp === context }
       end
     end
     
