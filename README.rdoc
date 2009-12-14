@@ -1,0 +1,166 @@
+= ActionFlow
+
+This Rails plugin provides a simple way to model multi-step processes
+such as wizards, sign-up flows, checkout processes and the like. It allows
+sequences to be easily composed and reordered, as well as letting you
+alter the behaviour and appearance of pages based on which flow they
+have been accessed through.
+
+
+== Installation
+
+  script/plugin install git://github.com/jcoglan/action_flow.git
+  
+  class ApplicationController < ActionController::Base
+    include ActionFlow::Filters
+  end
+  
+  module ApplicationHelper
+    include ActionFlow::Helpers
+  end
+
+
+== Specifying flows
+
+Setup is done using a +configure+ block which you can place anywhere
+is your application, though I'd recomment <tt>config/environment.rb</tt>
+or <tt>app/controllers/application.rb</tt>. The block is a list of flows,
+where each flow has a name and a list of controller actions. For example
+let's create a flow for importing contacts from Gmail. The flow allows
+you to import contacts, invite people to your site, and add people as
+friends.
+
+  ActionFlow.configure do
+    flow :import_contacts, contacts.import,
+                           contacts.invite,
+                           users.add_friends,
+                           contacts.done
+  end
+
+This tells +ActionFlow+ that the +import_contacts+ flow is the sequence
+of actions <tt>ContactsController#import</tt>, <tt>ContactsController#invite</tt>,
+<tt>UsersController#add_friends</tt> and <tt>ContactsController#done</tt>.
+On each request, +ActionFlow+ will watch the user's session and monitor
+which flows they are in and how far through each flow they've progressed.
+
+A user is judged to have begun a flow when the hit the first action in
+that flow. They exit the flow when they've hit every page in the flow
+in sequence. Multiple flows may be in play at once, and requests that
+don't match any of the current flows are simply ignored: they do not
+cause a flow to exit.
+
+
+== Using flows to drive your app
+
++ActionFlow+ provides a few methods to controllers and views handle sending
+the user to the next step in the flow and detecting which flow they are in.
+
+<b><tt>next_in_flow(name)</tt></b> returns a params hash for the next action
+in the named flow, based on the user's session history. If +ActionFlow+
+cannot figure out the next action automatically, this method returns +nil+.
+When used in a controller, it actually redirects if an action is found,
+the intent being that this makes it more expressive to fall through to
+a default response if there is nowhere to redirect to.
+
+  class ContactsController
+    def done
+      # ...
+      next_in_flow(:import_contacts) or render(...)
+    end
+  end
+
+In views it simply returns the params hash for making links:
+
+  <%= link_to "Skip this step", next_in_flow(:import_contacts) %>
+
+<b><tt>in_flow?(name)</tt> returns +true+ iff the user is in the named
+flow, allowing you to alter the behaviour of controllers or the appearance
+of views based on which flow(s) the user is currently in. This is especially
+useful when reusing flows through composition, as described below.
+
+
+== Composing flows
+
+Flows can be spliced together, allowing you to embed one sequence of actions
+inside another. Say we have a sign-up flow and we want to embed our contact
+importer from above within it.
+
+  ActionFlow.configure do
+    flow :import_contacts, contacts.import,
+                           contacts.invite,
+                           users.add_friends,
+                           contacts.done
+    
+    flow :signup,          users.new,
+                           post(users.create),
+                           :import_contacts,
+                           dashboard.show
+  end
+
+The <tt>signup</tt> flow begins with a request to <tt>UsersController#new</tt>,
+followed by a POST request to <tt>UsersController#create</tt>. The symbol
+<tt>:import_contacts</tt> that follows tells +ActionFlow+ to direct users
+to the start of the <tt>import_contact</tt> flow after <tt>UsersController#create</tt>,
+whose implementation might look like this:
+
+  class UsersController < ApplicationController
+    def create
+      @user = User.new(params[:user])
+      return next_in_flow(:signup) if @user.save
+    end
+  end
+
+If the new user is valid, we go to the next step, otherwise we fall through
+and render <tt>views/users/create.html.erb</tt> for them to correct the
+errors.
+
+While in the <tt>import_contacts</tt> flow, +ActionFlow+ will keep track
+of both flows that are in play, allowing the user to skip ahead within each
+flow. In your views, you can make use of this as follows:
+
+  # Links to ContactsController#invite
+  <%= link_to "Skip", next_in_flow(:import_contacts) %>
+  
+  # Links to DashboardController#show
+  <%= link_to "Skip", next_in_flow(:signup) %>
+
+
+== Flow variables
+
+Each flow a user is in gets its own session-like variable store, which
+allows data to be passed forward through a flow without having to
+store them as passthrough parameters in URLs. For example, say that
+I want to modify my app so that we got to <tt>/users/:username/profile</tt>
+at the end of the <tt>signup</tt> flow. We don't know the value of
+<tt>:username</tt> in advance, as it's determined during signup. But
+we can get +ActionFlow+ to redirect to the correct place using the
++find+ wrapper within our config and storing the needed data in the
+flow's "session".
+
+  ActionFlow.configure do
+    flow :signup,          users.new,
+                           post(users.create),
+                           profiles.show(:user_id => find(:username))
+  end
+  
+  class UsersController
+    def create
+      @user = User.new(params[:user])
+      if @user.save
+        flow[:username] = @user.username
+        next_in_flow(:signup)
+      end
+    end
+  end
+
+Setting <tt>flow[:username]</tt> gives +ActionFlow+ the information
+it needs to fill in the details for the next request: assuming I
+signed up with the username "jcoglan", here +next_in_flow+
+redirects to <tt>{:controller => "profiles", :action => "show",
+:user_id => "jcoglan"}</tt>.
+
+
+== License
+
+Copyright (c) 2009 James Coglan, released under the MIT license
+
