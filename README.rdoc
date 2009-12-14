@@ -43,7 +43,7 @@ of actions <tt>ContactsController#import</tt>, <tt>ContactsController#invite</tt
 On each request, +ActionFlow+ will watch the user's session and monitor
 which flows they are in and how far through each flow they've progressed.
 
-A user is judged to have begun a flow when the hit the first action in
+A user is judged to have begun a flow when they hit the first action in
 that flow. They exit the flow when they've hit every page in the flow
 in sequence. Multiple flows may be in play at once, and requests that
 don't match any of the current flows are simply ignored: they do not
@@ -65,7 +65,7 @@ a default response if there is nowhere to redirect to.
   class ContactsController
     def done
       # ...
-      next_in_flow(:import_contacts) or render(...)
+      next_in_flow or render(...)
     end
   end
 
@@ -73,7 +73,7 @@ In views it simply returns the params hash for making links:
 
   <%= link_to "Skip this step", next_in_flow(:import_contacts) %>
 
-<b><tt>in_flow?(name)</tt> returns +true+ iff the user is in the named
+<b><tt>in_flow?(name)</tt></b> returns +true+ iff the user is in the named
 flow, allowing you to alter the behaviour of controllers or the appearance
 of views based on which flow(s) the user is currently in. This is especially
 useful when reusing flows through composition, as described below.
@@ -100,7 +100,7 @@ importer from above within it.
 The <tt>signup</tt> flow begins with a request to <tt>UsersController#new</tt>,
 followed by a POST request to <tt>UsersController#create</tt>. The symbol
 <tt>:import_contacts</tt> that follows tells +ActionFlow+ to direct users
-to the start of the <tt>import_contact</tt> flow after <tt>UsersController#create</tt>,
+to the start of the <tt>import_contacts</tt> flow after <tt>UsersController#create</tt>,
 whose implementation might look like this:
 
   class UsersController < ApplicationController
@@ -130,7 +130,7 @@ flow. In your views, you can make use of this as follows:
 Each flow a user is in gets its own session-like variable store, which
 allows data to be passed forward through a flow without having to
 store them as passthrough parameters in URLs. For example, say that
-I want to modify my app so that we got to <tt>/users/:username/profile</tt>
+I want to modify my app so that we go to <tt>/users/:username/profile</tt>
 at the end of the <tt>signup</tt> flow. We don't know the value of
 <tt>:username</tt> in advance, as it's determined during signup. But
 we can get +ActionFlow+ to redirect to the correct place using the
