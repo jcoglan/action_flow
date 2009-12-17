@@ -43,6 +43,10 @@ of actions <tt>ContactsController#import</tt>, <tt>ContactsController#invite</tt
 On each request, +ActionFlow+ will watch the user's session and monitor
 which flows they are in and how far through each flow they've progressed.
 
+(The request-matching expressions <tt>contacts.import</tt> etc use the
+Consent request expression language. More information here:
+http://github.com/jcoglan/consent)
+
 A user is judged to have begun a flow when they hit the first action in
 that flow. They exit the flow when they've hit every page in the flow
 in sequence. Multiple flows may be in play at once, and requests that
