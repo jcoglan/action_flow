@@ -37,6 +37,21 @@ module ActionFlow
         @flow.action_at(@index + 1, variables, params)
       end
       
+      def to_session_object
+        [@index, @max_index, @variables, @complete]
+      end
+      
+      def self.from_session_object(flow_name, data)
+        instance = new(flow_name)
+        instance.instance_eval do
+          @index     = data[0]
+          @max_index = data[1]
+          @variables = data[2]
+          @complete  = data[3]
+        end
+        instance
+      end
+      
     private
       
       def current_matches?(context)

@@ -9,6 +9,7 @@ module ActionFlow
       
       def initialize(context)
         @context = context
+        load_states_from_session!
       end
       
       def in_flow?(name)
@@ -16,7 +17,8 @@ module ActionFlow
       end
       
       def current_flow(has_next = false)
-        status.values.sort_by { |state| state.match_distance(self) }.
+        status.values.
+        sort_by  { |state| state.match_distance(self) }.
         find_all { |state| !has_next or state.next_action }.
         first
       end
@@ -30,20 +32,37 @@ module ActionFlow
           state.progress!(self)
           status.delete(name) if state.complete?
         end
+        
+        dump_states_to_session!
       end
       
       def pick_next_action(*args)
         flow_name = args.find { |arg| Symbol === arg } || nil
         params    = args.find { |arg| Hash === arg }   || {}
         
-        flow = status[flow_name] || current_flow(true)
-        flow ? flow.next_action(params) : nil
+        flow_state = status[flow_name] || current_flow(true)
+        flow_state ? flow_state.next_action(params) : nil
       end
       
     private
       
       def status
-        session[:flow_status] ||= {}
+        @states
+      end
+      
+      def load_states_from_session!
+        session_data = session[:flow_status] || {}
+        @states = session_data.inject({}) do |table, (flow_name, data)|
+          table[flow_name] = State.from_session_object(flow_name, data)
+          table
+        end
+      end
+      
+      def dump_states_to_session!
+        session[:flow_status] = @states.inject({}) do |table, (flow_name, state)|
+          table[flow_name] = state.to_session_object
+          table
+        end
       end
       
       def new_flow_candidate
