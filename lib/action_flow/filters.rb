@@ -20,8 +20,9 @@ module ActionFlow
       redirect_to action
     end
     
-    def flow
-      flow_controller.current_flow.variables
+    def flow(name = nil)
+      flow_state = name.nil? ? flow_controller.current_flow : flow_controller.status[name]
+      flow_state.variables
     end
     
     def update_flow_status

@@ -44,11 +44,11 @@ module ActionFlow
         flow_state ? flow_state.next_action(params) : nil
       end
       
-    private
-      
       def status
         @states
       end
+      
+    private
       
       def load_states_from_session!
         session_data = session[:flow_status] || {}
