@@ -89,4 +89,8 @@ Feature: Manage flow transitions
   Scenario: Pass params through #next_in_flow
     When I visit "/settings/passthrough/milk"
     Then I should see "Received milk"
+  
+  Scenario: Session contains invalid objects
+    Given I visit "/settings/poison"
+    And I visit "/settings/one"
 

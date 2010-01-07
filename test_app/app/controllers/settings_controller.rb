@@ -19,5 +19,10 @@ class SettingsController < ApplicationController
     next_in_flow(:product => params[:id])
   end
   
+  def poison
+    session[:flow_status][:process] = :not_a_flow_state
+    render :text => 'done'
+  end
+  
 end
 

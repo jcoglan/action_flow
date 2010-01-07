@@ -9,6 +9,7 @@ module ActionFlow
       
       def initialize(context)
         @context = context
+        remove_legacy_objects_from_session!
         load_states_from_session!
       end
       
@@ -49,6 +50,13 @@ module ActionFlow
       end
       
     private
+      
+      def remove_legacy_objects_from_session!
+        return unless status = session[:flow_status]
+        status.each do |key, value|
+          status.delete(key) unless Array === value
+        end
+      end
       
       def load_states_from_session!
         session_data = session[:flow_status] || {}
