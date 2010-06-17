@@ -129,6 +129,32 @@ flow. In your views, you can make use of this as follows:
   <%= link_to "Skip", next_in_flow(:signup) %>
 
 
+== Flow conditions
+
+Flow conditions help control whether steps should be entered. The main use case 
+for this is defining mutually exclusive flows. For example:
+
+  ActionFlow.configure do
+    flow :signup, users.new { not in_flow?(:alternate_signup) },
+                  users.create,
+                  users.message
+
+    flow :alternate_signup, users.message { not in_flow?(:signup) },
+                            users.new,
+                            users.create
+  end
+
+  ActionFlow.configure do
+    flow :signup, users.new { not in_any_flow? },
+                  users.create,
+                  users.message
+
+    flow :alternate_signup, users.message { not in_any_flow? },
+                            users.new,
+                            users.create
+  end
+
+
 == Flow variables
 
 Each flow a user is in gets its own session-like variable store, which
