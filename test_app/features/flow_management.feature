@@ -1,4 +1,25 @@
 Feature: Manage flow transitions
+
+  Background: Setup default flows
+    Given I have the flows:
+    """
+    flow :steps,    settings.one,
+                    settings.two,
+                    settings.three
+
+    flow :large,    settings.four,
+                    settings.five,
+                    settings.six,
+                    settings.seven,
+                    settings.eight
+
+    flow :process,  settings.intro + application.other,
+                    :steps,
+                    settings.outro(:id => find(:text))
+
+    flow :pass,     settings.passthrough,
+                    settings.intro
+    """
   
   Scenario: Simple flow sequence terminated at end
     When I visit "/settings/one"

@@ -36,4 +36,3 @@ module ActionFlow
   end
 
 end
-

@@ -9,6 +9,10 @@ module ActionFlow
       @flow_controller.in_flow?(name)
     end
     
+    def in_any_flow?
+      @flow_controller.in_any_flow?
+    end
+    
   end
 end
 

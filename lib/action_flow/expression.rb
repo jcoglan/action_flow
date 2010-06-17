@@ -58,7 +58,7 @@ module ActionFlow
         (value === p[key]) || (value === p[key].to_i)
       end
       
-      @matcher ? context.instance_eval(@matcher) : true
+      @matcher ? context.instance_eval(&@matcher) : true
     end
     
     def to_h(env = {})

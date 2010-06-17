@@ -15,6 +15,10 @@ module ActionFlow
       flow_controller.in_flow?(name)
     end
     
+    def in_any_flow?
+      flow_controller.in_any_flow?
+    end
+    
     def next_in_flow(name = nil, params = {})
       return nil unless action = flow_controller.pick_next_action(name, params)
       redirect_to action

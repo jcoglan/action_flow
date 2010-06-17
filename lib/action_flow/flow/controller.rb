@@ -17,6 +17,10 @@ module ActionFlow
         status.has_key?(name)
       end
       
+      def in_any_flow?
+        not status.empty?
+      end
+      
       def current_flow(has_next = false)
         status.values.
         sort_by  { |state| state.match_distance(self) }.
