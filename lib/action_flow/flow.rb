@@ -3,8 +3,13 @@ module ActionFlow
     
     def initialize(expressions)
       @expressions = expressions
+      @terminators = []
     end
-    
+
+    def terminators
+      @terminators
+    end
+
     def length
       @expressions.length
     end
@@ -18,7 +23,11 @@ module ActionFlow
     def ===(context)
       @expressions.any? { |expr| expr === context }
     end
-    
+
+    def terminates_on?(context)
+      @terminators.any? { |expr| expr === context }
+    end
+
     def match_distance(index, context)
       return 1000 unless expression = @expressions[index]
       return 0 if expression === context

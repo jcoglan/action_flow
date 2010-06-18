@@ -32,10 +32,10 @@ module ActionFlow
         if name = new_flow_candidate
           status[name] = State.new(name)
         end
-        
+
         status.each do |name, state|
           state.progress!(self)
-          status.delete(name) if state.complete?
+          status.delete(name) if state.terminated? || state.complete?
         end
         
         dump_states_to_session!

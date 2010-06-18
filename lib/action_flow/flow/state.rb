@@ -5,12 +5,13 @@ module ActionFlow
       attr_reader :variables
       
       def initialize(flow_name)
-        @name      = flow_name
-        @flow      = ActionFlow.flows[flow_name]
-        @index     = 0
-        @max_index = 0
-        @variables = {}
-        @complete  = false
+        @name       = flow_name
+        @flow       = ActionFlow.flows[flow_name]
+        @index      = 0
+        @max_index  = 0
+        @variables  = {}
+        @complete   = false
+        @terminated = false
       end
       
       def match_distance(context)
@@ -18,6 +19,10 @@ module ActionFlow
       end
       
       def progress!(context)
+        if @flow.terminates_on?(context)
+          @terminated = true
+          return
+        end
         @index += 1 if @flow.match_at?(@index + 1, context)
         @max_index = [@max_index, @index].max
         return if current_matches?(context)
@@ -32,7 +37,11 @@ module ActionFlow
       def complete?
         @complete
       end
-      
+
+      def terminated?
+        @terminated
+      end
+
       def next_action(params = {})
         @flow.action_at(@index + 1, variables, params)
       end

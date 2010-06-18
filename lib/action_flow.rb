@@ -16,7 +16,7 @@ module ActionFlow
     def flows
       @flows ||= {}
     end
-    
+
     def configure(&block)
       DSL.new(self, &block)
     end
@@ -32,6 +32,20 @@ module ActionFlow
     
     def flow(name, *expressions)
       @flow_register.flows[name.to_sym] = Flow.new(expressions)
+    end
+
+    def terminate(*args)
+      expression_options = args.pop
+
+      unless expression_options.respond_to?(:[]) && expression = expression_options[:on]
+        raise ArgumentError, 'Could not find :on => expression in terminate'
+      end
+
+      args.each do |arg|
+        flow_name = arg.to_sym
+        next unless @flow_register.flows[flow_name]
+        @flow_register.flows[flow_name].terminators << expression
+      end
     end
   end
 
