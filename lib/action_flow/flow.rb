@@ -14,14 +14,23 @@ module ActionFlow
       @expressions.length
     end
     
+    def begins_with?(context)
+      match_at?(0, context)
+    end
+    
     def match_at?(index, context, exact = false)
       return false unless expression = @expressions[index]
+      match_expression?(expression, context, exact)
+    end
+    
+    def match_expression?(expression, context, exact = false)
+      return expression.any? { |atom| match_expression?(atom, context, exact) } if Array === expression
       return ActionFlow.flows[expression] === context if Symbol === expression and not exact
       expression === context
     end
     
     def ===(context)
-      @expressions.any? { |expr| expr === context }
+      @expressions.any? { |expr| match_expression?(expr, context) }
     end
 
     def terminates_on?(context)
@@ -35,14 +44,10 @@ module ActionFlow
       1000
     end
     
-    def begins_with?(context)
-      @expressions.first === context
-    end
-    
     def action_at(index, env, params = {})
       return nil unless expression = @expressions[index]
       return ActionFlow.flows[expression].action_at(0, env, params) if Symbol === expression
-      expression.to_h(env).merge(params)
+      expression.to_params(env).merge(params)
     end
     
   end

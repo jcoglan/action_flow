@@ -61,7 +61,7 @@ module ActionFlow
       @matcher ? context.instance_eval(&@matcher) : true
     end
     
-    def to_h(env = {})
+    def to_params(env = {})
       options = {:controller => '/' + @controller}
       options[:action] = @action || :index
       options[:format] = @format if @format

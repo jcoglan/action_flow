@@ -6,3 +6,7 @@
   <%= link_to "Skip", next_in_flow(:process) %>
 <% end %>
 
+<% if in_flow?(:has_alternates) %>
+  In the alternatives flow
+<% end %>
+
