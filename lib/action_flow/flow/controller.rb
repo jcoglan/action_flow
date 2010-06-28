@@ -13,8 +13,8 @@ module ActionFlow
         load_states_from_session!
       end
       
-      def in_flow?(name)
-        status.has_key?(name)
+      def in_flow?(*names)
+        names.any? &status.method(:has_key?)
       end
       
       def in_any_flow?

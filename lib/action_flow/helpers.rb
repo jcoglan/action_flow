@@ -1,16 +1,13 @@
+require 'forwardable'
+
 module ActionFlow
   module Helpers
     
+    extend Forwardable
+    def_delegators :@flow_controller, :in_flow?, :in_any_flow?
+    
     def next_in_flow(name = nil, params = {})
       @flow_controller.pick_next_action(name, params)
-    end
-    
-    def in_flow?(name)
-      @flow_controller.in_flow?(name)
-    end
-    
-    def in_any_flow?
-      @flow_controller.in_any_flow?
     end
     
   end
