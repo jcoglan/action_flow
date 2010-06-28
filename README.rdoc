@@ -131,28 +131,39 @@ flow. In your views, you can make use of this as follows:
 
 == Flow conditions
 
-Flow conditions help control whether steps should be entered. The main use case 
-for this is defining mutually exclusive flows. For example:
+Flow conditions give you finer control over whether a request should progress
+a flow. You can attach a block of arbitrary Ruby code to request expressions
+to provide more matching control. For example you could only allow a certain
+flow to be entered if the first request is not an Ajax request:
 
   ActionFlow.configure do
-    flow :signup, users.new { not in_flow?(:alternate_signup) },
+    flow :signup, users.new { not request.xhr? },
+                  users.create,
+                  users.message
+  end
+
+
+== Mutually exclusive flows
+
+Sometimes you want two more flows to be mutually exclusive, for example if
+you're trying a few different orderings of a process in different parts of
+your application. The +mutex+ command takes a list of flow names and makes
+sure that only one flow in that list can be active at once.
+
+  ActionFlow.configure do
+    flow :signup, users.new,
                   users.create,
                   users.message
 
-    flow :alternate_signup, users.message { not in_flow?(:signup) },
+    flow :alternate_signup, users.message,
                             users.new,
                             users.create
+    
+    mutex :signup, :alternate_signup
   end
 
-  ActionFlow.configure do
-    flow :signup, users.new { not in_any_flow? },
-                  users.create,
-                  users.message
-
-    flow :alternate_signup, users.message { not in_any_flow? },
-                            users.new,
-                            users.create
-  end
+This makes it easier to reason about which step ActionFlow will pick next
+since you know only one of these flows will apply at any time.
 
 
 == Flow variables

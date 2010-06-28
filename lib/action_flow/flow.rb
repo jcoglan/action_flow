@@ -1,13 +1,12 @@
 module ActionFlow
   class Flow
     
+    attr_accessor :mutexes, :terminators
+    
     def initialize(expressions)
       @expressions = expressions
+      @mutexes     = []
       @terminators = []
-    end
-
-    def terminators
-      @terminators
     end
 
     def length

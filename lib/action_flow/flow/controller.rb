@@ -79,7 +79,10 @@ module ActionFlow
       
       def new_flow_candidates
         return nil unless flows = ActionFlow.flows
-        flows.keys.select { |name| flows[name].begins_with?(self) }
+        flows.keys.select do |name|
+          flows[name].begins_with?(self) and
+          not flows[name].mutexes.any?(&method(:in_flow?))
+        end
       end
     end
     

@@ -33,6 +33,13 @@ module ActionFlow
     def flow(name, *expressions)
       @flow_register.flows[name.to_sym] = Flow.new(expressions)
     end
+    
+    def mutex(*names)
+      names.each do |name|
+        next unless flow = @flow_register.flows[name]
+        flow.mutexes = names - [name]
+      end
+    end
 
     def terminate(*args)
       expression_options = args.pop

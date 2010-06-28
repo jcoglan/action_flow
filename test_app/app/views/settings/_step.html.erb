@@ -10,3 +10,7 @@
   In the alternatives flow
 <% end %>
 
+<% [:one, :two].each do |name| %>
+  <% if in_flow? name %>In flow <%= name %><% end %>
+<% end %>
+
