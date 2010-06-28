@@ -33,9 +33,10 @@ module ActionFlow
           status[name] = State.new(name)
         end
 
+        status.each { |name, state| state.progress!(self) }
+        
         status.each do |name, state|
-          state.progress!(self)
-          status.delete(name) if state.terminated? || state.complete?
+          status.delete(name) if state.terminated? or state.complete?
         end
         
         dump_states_to_session!
