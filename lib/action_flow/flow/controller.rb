@@ -29,7 +29,7 @@ module ActionFlow
       end
       
       def update_session!
-        if name = new_flow_candidate
+        new_flow_candidates.each do |name|
           status[name] = State.new(name)
         end
 
@@ -77,9 +77,9 @@ module ActionFlow
         end
       end
       
-      def new_flow_candidate
+      def new_flow_candidates
         return nil unless flows = ActionFlow.flows
-        flows.keys.find { |name| flows[name].begins_with?(self) }
+        flows.keys.select { |name| flows[name].begins_with?(self) }
       end
     end
     
