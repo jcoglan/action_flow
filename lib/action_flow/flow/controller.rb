@@ -29,15 +29,13 @@ module ActionFlow
       end
       
       def update_session!
-        new_flow_candidates.each do |name|
-          status[name] = State.new(name)
-        end
-
         status.each { |name, state| state.progress!(self) }
         
         status.each do |name, state|
           status.delete(name) if state.terminated? or state.complete?
         end
+        
+        new_flow_candidates.each { |name| status[name] = State.new(name) }
         
         dump_states_to_session!
       end

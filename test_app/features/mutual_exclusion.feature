@@ -10,7 +10,12 @@ Feature: Mutually exclusive flows
     
     flow :two, settings.two
     
-    mutex :one, :two
+    flow :others, settings.four,
+                  settings.five
+    
+    terminate :others, :on => settings.one
+    
+    mutex :one, :two, :others
     """
   
   Scenario: Don't enter a flow excluded by another
@@ -26,4 +31,9 @@ Feature: Mutually exclusive flows
     And I visit "/settings/two"
     Then I should not see "In flow one"
     And I should see "In flow two"
+  
+  Scenario: Locked flow becomes available if it terminates another
+    When I visit "/settings/four"
+    And I visit "/settings/one"
+    Then I should see "Flow number 1"
 

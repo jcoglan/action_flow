@@ -12,6 +12,10 @@ This is a step
   In the alternatives flow
 <% end %>
 
+<% if in_flow?(:one) %>
+  Flow number 1
+<% end %>
+
 <% [:one, :two].each do |name| %>
   <% if in_flow? name %>In flow <%= name %><% end %>
 <% end %>
