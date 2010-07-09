@@ -114,4 +114,9 @@ Feature: Manage flow transitions
   Scenario: Session contains invalid objects
     Given I visit "/settings/poison"
     And I visit "/settings/one"
+  
+  Scenario: Session contains data for nonexistent flows
+    Given I visit "/settings/delete"
+    And I visit "/settings/one"
+    Then I should see "This is a step"
 

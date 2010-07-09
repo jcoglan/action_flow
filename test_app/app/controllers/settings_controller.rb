@@ -24,5 +24,10 @@ class SettingsController < ApplicationController
     render :text => 'done'
   end
   
+  def delete
+    session[:flow_status][:nonexistent] = [1,1,{},false]
+    render :text => 'done'
+  end
+  
 end
 

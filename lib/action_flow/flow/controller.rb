@@ -58,8 +58,9 @@ module ActionFlow
       
       def remove_legacy_objects_from_session!
         return unless status = session[:flow_status]
+        flows = ActionFlow.flows
         status.each do |key, value|
-          status.delete(key) unless Array === value
+          status.delete(key) unless Array === value and flows.has_key?(key)
         end
       end
       
