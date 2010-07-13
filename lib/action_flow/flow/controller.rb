@@ -40,7 +40,7 @@ module ActionFlow
         dump_states_to_session!
       end
       
-      def pick_next_action(*args)
+      def next_in_flow(*args)
         flow_name = args.find { |arg| Symbol === arg } || nil
         params    = args.find { |arg| Hash === arg }   || {}
         

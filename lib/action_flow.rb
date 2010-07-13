@@ -4,8 +4,8 @@
     flow
     flow/controller
     flow/state
-    filters
     helpers
+    filters
 ].each do |file|
   require File.dirname(__FILE__) + '/action_flow/' + file
 end
