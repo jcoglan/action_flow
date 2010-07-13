@@ -11,12 +11,12 @@ class SettingsController < ApplicationController
   %w[one two three four five six seven eight].each do |number|
     define_method number do
       skip = next_in_flow(:process) if in_flow?(:process) and params[:skip]
-      skip or render(:partial => 'step')
+      skip ? redirect_to(skip) : render(:partial => 'step')
     end
   end
   
   def passthrough
-    next_in_flow(:product => params[:id])
+    redirect_to next_in_flow(:product => params[:id])
   end
   
   def poison

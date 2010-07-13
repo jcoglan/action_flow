@@ -62,16 +62,6 @@ the user to the next step in the flow and detecting which flow they are in.
 <b><tt>next_in_flow(name)</tt></b> returns a params hash for the next action
 in the named flow, based on the user's session history. If +ActionFlow+
 cannot figure out the next action automatically, this method returns +nil+.
-When used in a controller, it actually redirects if an action is found,
-the intent being that this makes it more expressive to fall through to
-a default response if there is nowhere to redirect to.
-
-  class ContactsController
-    def done
-      # ...
-      next_in_flow or render(...)
-    end
-  end
 
 In views it simply returns the params hash for making links:
 
@@ -110,7 +100,7 @@ whose implementation might look like this:
   class UsersController < ApplicationController
     def create
       @user = User.new(params[:user])
-      return next_in_flow(:signup) if @user.save
+      return redirect_to next_in_flow(:signup) if @user.save
     end
   end
 
@@ -189,7 +179,7 @@ flow's "session".
       @user = User.new(params[:user])
       if @user.save
         flow[:username] = @user.username
-        next_in_flow(:signup)
+        redirect_to next_in_flow(:signup)
       end
     end
   end

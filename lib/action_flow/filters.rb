@@ -17,8 +17,7 @@ module ActionFlow
     end
     
     def next_in_flow(name = nil, params = {})
-      return nil unless action = flow_controller.pick_next_action(name, params)
-      redirect_to action
+      flow_controller.pick_next_action(name, params)
     end
     
     def flow(name = nil)
